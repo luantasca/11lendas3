@@ -1,0 +1,12 @@
+{
+  "name": "@manager/match-engine",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Motor de partidas determinístico, independente da interface (GDD seções 103 e 104).",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  }
+}

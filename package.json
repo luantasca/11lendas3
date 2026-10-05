@@ -1,0 +1,22 @@
+{
+  "name": "manager-futebol-dupla",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Manager de futebol online em dupla (Presidente + Técnico) - monorepo do projeto.",
+  "license": "UNLICENSED",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@types/node": "^16.18.0",
+    "typescript": "^5.4.5",
+    "vitest": "0.34.6"
+  },
+  "engines": {
+    "node": ">=16.17"
+  }
+}
