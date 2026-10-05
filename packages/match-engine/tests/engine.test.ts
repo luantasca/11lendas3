@@ -2,15 +2,16 @@ import { describe, expect, it } from "vitest";
 import { createMatchEngine } from "../src/engine.js";
 import { MATCH_DURATION_SECONDS } from "../src/match-state.js";
 import type { MatchConfig } from "../src/match-state.js";
+import { jogador } from "./helpers.js";
 
-/** Configuração padrão de teste: 2 jogadores por clube. */
+/** Configuração padrão de teste: 3 jogadores por clube (goleiro + 2). */
 function configPadrao(sobrescrever: Partial<MatchConfig> = {}): MatchConfig {
   return {
     seed: 918281982,
     homeClubId: "casa",
     awayClubId: "fora",
-    homePlayerIds: ["j1", "j2"],
-    awayPlayerIds: ["j3", "j4"],
+    homePlayers: [jogador("j1"), jogador("j2"), jogador("j3")],
+    awayPlayers: [jogador("j4"), jogador("j5"), jogador("j6")],
     ...sobrescrever,
   };
 }
@@ -27,12 +28,25 @@ describe("createMatchEngine — estado inicial", () => {
     expect(estado.possessionClubId).toBe("casa");
     expect(estado.phase).toBe("CONSTRUCAO");
     expect(estado.ball).toEqual({ x: 50, y: 50 });
-    expect(estado.conditions).toEqual({ j1: 100, j2: 100, j3: 100, j4: 100 });
+    expect(estado.events).toEqual([]);
+    expect(estado.homePossessionSeconds).toBe(0);
+    expect(estado.awayPossessionSeconds).toBe(0);
+    expect(estado.lastPasserId).toBeNull();
+    expect(estado.conditions).toEqual({
+      j1: 100,
+      j2: 100,
+      j3: 100,
+      j4: 100,
+      j5: 100,
+      j6: 100,
+    });
   });
 
   it("aceita condição inicial personalizada", () => {
     const engine = createMatchEngine(configPadrao({ initialCondition: 92 }));
-    expect(Object.values(engine.state.conditions)).toEqual([92, 92, 92, 92]);
+    expect(Object.values(engine.state.conditions)).toEqual([
+      92, 92, 92, 92, 92, 92,
+    ]);
   });
 
   it("expõe a RNG com a seed informada (GDD §104)", () => {
@@ -48,15 +62,20 @@ describe("validação da configuração", () => {
     ).toThrow(/diferentes/);
   });
 
-  it("rejeita clube sem jogadores escalados", () => {
+  it("rejeita elenco com menos de 3 jogadores", () => {
     expect(() =>
-      createMatchEngine(configPadrao({ awayPlayerIds: [] }))
-    ).toThrow(/ao menos um jogador/);
+      createMatchEngine(configPadrao({ homePlayers: [jogador("j1")] }))
+    ).toThrow(/ao menos 3 jogadores/);
+    expect(() =>
+      createMatchEngine(configPadrao({ awayPlayers: [] }))
+    ).toThrow(/ao menos 3 jogadores/);
   });
 
   it("rejeita jogador repetido na escalação", () => {
     expect(() =>
-      createMatchEngine(configPadrao({ awayPlayerIds: ["j1", "j3"] }))
+      createMatchEngine(
+        configPadrao({ awayPlayers: [jogador("j1"), jogador("j5"), jogador("j6")] })
+      )
     ).toThrow(/duas vezes/);
   });
 
@@ -101,6 +120,15 @@ describe("tick — ciclo de 1 segundo (GDD §52)", () => {
     const noFinal = engine.tick();
     expect(noFinal.gameSecond).toBe(MATCH_DURATION_SECONDS);
     expect(noFinal.status).toBe("ENCERRADA");
+  });
+
+  it("a linha do tempo de posse soma exatamente os segundos jogados (§52)", () => {
+    const engine = createMatchEngine(configPadrao());
+    for (let i = 0; i < 300; i++) engine.tick();
+
+    expect(
+      engine.state.homePossessionSeconds + engine.state.awayPossessionSeconds
+    ).toBe(300);
   });
 });
 

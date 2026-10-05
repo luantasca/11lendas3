@@ -21,6 +21,7 @@ financeira) e um **Técnico** (gestão esportiva e partidas).
 | `match-engine` — aleatoriedade controlada (etapa 4) | ✅ Concluído |
 | `match-engine` — eventos, estatísticas e xG (etapa 5) | ✅ Concluído |
 | `match-engine` — nota dos jogadores (etapa 6) | ✅ Concluído |
+| `match-engine` — integração do ciclo: jogadas, gols e eventos (ADR-012) | ✅ Concluído |
 | `match-engine` — prova de conceito (etapa 7) | ⬜ Não iniciada |
 | App web, banco de dados, autenticação, draft, liga | ⬜ Não iniciados |
 

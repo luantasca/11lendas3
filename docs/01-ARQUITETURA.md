@@ -55,7 +55,8 @@ flowchart TD
         │   ├── index.ts           # API pública (exportações)
         │   ├── rng.ts             # RNG determinístico (etapa 1)
         │   ├── match-state.ts     # Tipos/constantes do estado (etapa 2)
-        │   ├── engine.ts          # Ciclo de simulação (etapa 2)
+        │   ├── engine.ts          # Ciclo + integração (ADR-012)
+        │   ├── simulation.ts      # Simulação por fases (ADR-012)
         │   ├── player.ts          # Atributos do jogador (etapa 3)
         │   ├── actions.ts         # Passe, drible, finalização (etapa 3)
         │   ├── events.ts          # Eventos da partida (etapa 5, §91)
@@ -63,12 +64,14 @@ flowchart TD
         │   ├── stats.ts           # Estatísticas (etapa 5, §59)
         │   └── rating.ts          # Nota dos jogadores (etapa 6, §61)
         └── tests/
+            ├── helpers.ts                 # Builders de jogadores
             ├── rng.test.ts                # Testes com valores golden
             ├── engine.test.ts             # Ciclo, condição e determinismo
             ├── actions.test.ts            # Chance, sensibilidade e validações
             ├── controlled-randomness.test.ts  # Propriedades estatísticas (§56)
             ├── stats.test.ts              # Eventos, xG e estatísticas (§59–60)
-            └── rating.test.ts             # Nota dos jogadores (§61)
+            ├── rating.test.ts             # Nota dos jogadores (§61)
+            └── integration.test.ts        # Integração do ciclo (ADR-012)
 ```
 
 ## 3. Arquitetura alvo do motor (prevista no GDD §106)

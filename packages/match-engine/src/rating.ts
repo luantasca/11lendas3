@@ -30,19 +30,23 @@ export const RATING_MAX = 10.0;
 
 // ---------------------------------------------------------------------------
 // Pesos PROVISÓRIOS por ação (ADR-011 — ajustar por playtest)
+//
+// Recalibrados na sessão 7 após medir o volume real de eventos de uma
+// partida completa (~5.700 eventos; ~600 passes por jogador) — pesos
+// maiores saturavam o teto 10.0 e anulavam a discriminação da §61.
 // ---------------------------------------------------------------------------
-const DELTA_GOL = 0.8;
-const DELTA_ASSISTENCIA = 0.4;
-const DELTA_DEFESA = 0.3; // goleiro que defendeu (SAVE.playerId)
-const DELTA_CHUTE_DEFENDIDO = -0.1; // finalizador (SAVE.secondaryPlayerId)
-const DELTA_PASSE_COMPLETO = 0.03;
-const DELTA_PASSE_FALHO = -0.05;
-const DELTA_CHUTE_FORA = -0.15; // SHOT com noGol === false
-const DELTA_TACKLE = 0.1;
-const DELTA_FALTA = -0.1;
-const DELTA_CARTAO_AMARELO = -0.3;
-const DELTA_CARTAO_VERMELHO = -0.8;
-const DELTA_IMPEDIMENTO = -0.1;
+const DELTA_GOL = 0.4;
+const DELTA_ASSISTENCIA = 0.2;
+const DELTA_DEFESA = 0.015; // goleiro que defendeu (SAVE.playerId)
+const DELTA_CHUTE_DEFENDIDO = -0.004; // finalizador (SAVE.secondaryPlayerId)
+const DELTA_PASSE_COMPLETO = 0.002;
+const DELTA_PASSE_FALHO = -0.002;
+const DELTA_CHUTE_FORA = -0.05; // SHOT com noGol === false
+const DELTA_TACKLE = 0.001;
+const DELTA_FALTA = -0.02;
+const DELTA_CARTAO_AMARELO = -0.1;
+const DELTA_CARTAO_VERMELHO = -0.5;
+const DELTA_IMPEDIMENTO = -0.02;
 
 /** Efeito de uma ação na nota de um jogador. */
 export interface RatingContribution {

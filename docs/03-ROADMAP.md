@@ -20,14 +20,15 @@
 | 6 | Nota dos jogadores | §61 | ✅ Concluída (2026-10-05) |
 | 7 | Prova de conceito: Time A × Time B, campo 2D + narração, alterações táticas e substituições | §113, §114 | ⬜ Não iniciada |
 
-> **Próximos passos:** (1) integração de ações/eventos ao ciclo — ver obs.
-> abaixo; (2) etapa 7 — prova de conceito (§113–114), primeira interface.
+> **Próxima:** etapa 7 — prova de conceito (§113–114): campo 2D,
+> narração, táticas ao vivo — primeira interface.
 >
-> Obs.: as ações (etapa 3) e os módulos de eventos/estatísticas (etapa 5)
-> são funções independentes e **ainda não estão integradas ao ciclo da
-> partida** (etapa 2) — o ciclo ainda não gera eventos sozinho. A integração
-> exige posicionamento em campo e acontece na preparação da prova de
-> conceito (§113).
+> ✅ **Integração do ciclo concluída** (2026-10-05, ADR-012): o `tick()`
+> agora gera jogadas — fases da posse (§53), ações por atributos (§55),
+> gols, eventos, estatísticas (§59) e notas (§61). Simplificações
+> registradas: sem faltas/cartões/escanteios/impedimentos, chute sempre
+> no gol, seleção por atributos (posições entram na etapa 7).
+> **Balanceamento pendente**: partida real mede ~20 gols (playtest).
 
 > Critério da prova de conceito (§114): responder
 > **"É divertido assistir e comandar uma partida?"** — sem mercado, estádio,

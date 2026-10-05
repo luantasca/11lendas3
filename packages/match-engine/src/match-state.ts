@@ -1,24 +1,23 @@
 /**
- * Estado da partida — etapa 2 do motor (GDD §52 e §53).
+ * Estado da partida — etapa 2 + integração do ciclo.
  *
  * Referências do GDD:
  * - §52: o motor funciona por ciclos; cada ciclo representa 1 segundo de jogo
- *   e atualiza posição da bola, intenção tática, condição física e posse.
+ *   e atualiza posição da bola, intenção tática, condição física, posse
+ *   e eventos.
  * - §53: a partida passa por estados de posse
  *   (DEFESA, CONSTRUÇÃO, MEIO-CAMPO, ATAQUE, ÚLTIMO TERÇO, CHANCE, FINALIZAÇÃO).
  * - §16: condição física em escala 0 a 100%.
+ * - §59/§91: eventos e posse alimentam as estatísticas.
  * - §89: placar e status do jogo.
  *
  * Premissas de implementação (documentadas em docs/REGISTRO-DE-ALTERACOES.md):
- * - Duração de 90 minutos (5400 s): o GDD não define explicitamente, mas
- *   cita minutos 70/80 em §67 — regra padrão de futebol, ajustável.
- * - Campo 2D normalizado: x e y em 0–100 (o GDD não define sistema de
- *   coordenadas; escolha provisória para a interface de campo 2D, §40).
- * - Fase inicial CONSTRUCAO: valor provisório até a etapa 3 implementar as
- *   transições por ação.
- * - A transição entre fases de posse e o movimento da bola NÃO estão aqui:
- *   são ações resolvidas por atributos (etapa 3, GDD §54–55).
+ * - Duração de 90 minutos (5400 s): regra padrão de futebol; GDD não define.
+ * - Campo 2D normalizado: x e y em 0–100 (§40 não define coordenadas).
+ * - Fase inicial CONSTRUCAO; mandante ataca para x crescente.
  */
+import type { MatchEvent } from "./events.js";
+import type { Player } from "./player.js";
 
 /** Ritmo do jogo (GDD §47). Afeta o desgaste físico por ciclo. */
 export type Tempo = "BAIXO" | "NORMAL" | "ALTO";
@@ -72,22 +71,34 @@ export interface MatchState {
    * indexada por id do jogador.
    */
   conditions: Record<string, number>;
+  /** Todos os eventos gerados até aqui (GDD §91) — alimenta §59 e §61. */
+  events: MatchEvent[];
+  /** Segundos de posse acumulados do mandante (linha do tempo, §52/§59). */
+  homePossessionSeconds: number;
+  /** Segundos de posse acumulados do visitante (linha do tempo, §52/§59). */
+  awayPossessionSeconds: number;
+  /**
+   * Último passe completado na posse atual — usado para atribuir a
+   * assistência no gol (GDD §61; contrato ADR-011).
+   */
+  lastPasserId: string | null;
 }
 
 /**
  * Configuração para criar uma partida.
- * O motor recebe times, escalações e táticas (GDD §103) — nesta etapa,
- * a escalação é a lista de ids em campo; posições/funções entram na etapa 3.
+ * O motor recebe times, escalações e táticas (GDD §103) — os elencos são
+ * listas de jogadores COM atributos (§10), necessários para resolver as
+ * ações dentro do ciclo.
  */
 export interface MatchConfig {
   /** Seed da partida para simulação determinística (GDD §104). */
   seed: number;
   homeClubId: string;
   awayClubId: string;
-  /** Ids dos jogadores escalados pelo clube da casa. */
-  homePlayerIds: string[];
-  /** Ids dos jogadores escalados pelo clube visitante. */
-  awayPlayerIds: string[];
+  /** Elenco do clube da casa — mínimo 3 (goleiro + 2 em campo). */
+  homePlayers: Player[];
+  /** Elenco do visitante — mínimo 3 (goleiro + 2 em campo). */
+  awayPlayers: Player[];
   /** Ritmo (GDD §47). Padrão: NORMAL. */
   tempo?: Tempo;
   /** Pressão (GDD §48). Padrão: NORMAL. */

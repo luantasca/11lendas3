@@ -6,6 +6,95 @@
 
 ---
 
+## 2026-10-05 — Sessão 7: Integração do ciclo — o motor joga futebol
+
+### O que foi feito
+
+1. **`src/simulation.ts` (novo)** — `simularCiclo()`: máquina de fases da
+   posse (§53), 1 ação por ciclo (70% passe / 30% drible), pressão por
+   fase, avanço no sucesso, perda de posse + TACKLE no fracasso,
+   finalização com xG (§60), gol/defesa, assistência via `lastPasserId`.
+2. **`src/engine.ts`** — `tick()` agora: relógio + condição + linha de
+   posse (§52) + **simulação**; valida elencos (mínimo 3 por clube).
+3. **`src/match-state.ts`** — **quebra de API**: `homePlayers`/
+   `awayPlayers: Player[]` substituem `homePlayerIds`/`awayPlayerIds`;
+   `MatchState` ganhou `events[]`, `home/awayPossessionSeconds` e
+   `lastPasserId`.
+4. **Testes**: `engine.test.ts` atualizado; `tests/integration.test.ts`
+   (8 testes: eventos surgem, fase/posse mudam, partida completa com
+   gols, estatísticas e notas alimentadas, determinismo da partida
+   inteira); `tests/helpers.ts` compartilhado. Total: 93 testes ✅.
+5. **Bug encontrado e corrigido (causa raiz)**: o filtro de campo do time
+   do ataque usava o **goleiro do adversário** — goleiros passavam,
+   chutavam e inflavam notas (`a_gk: 9.99` na sonda). Corrigido separando
+   `goleiroAtaque`/`goleiroDefesa`.
+6. **Calibração medida por sonda** (partida real, seed 918281982):
+
+   | Métrica | Antes | Depois |
+   |---------|-------|--------|
+   | Notas | 8/8 jogadores em 10.0 (saturado) | 9.65 / 9.40 / 9.29 / 9.18 / 8.56 / 7.66 / 6.81 / 6.66 |
+   | Eventos/partida | — | ~5.700 (passes ~1.800 por lado) |
+
+   Pesos da §61 recalibrados duas vezes (ADR-011 atualizado).
+7. **Documentação**: ADR-012 (novo), ADR-011 (tabela recalibrada),
+   roadmap (integração ✅), READMEs, guia, árvore.
+
+### Motivo
+
+Pedido "pode dar andamento" — passo (1) definido ao final da sessão 6:
+integrar ações/eventos ao ciclo antes da prova de conceito.
+
+### Premissas e constatações (com números)
+
+| Item | Situação | Tratamento |
+|------|----------|------------|
+| ~20 gols por partida (11x12 na sonda) | Balanceamento provisório das fases/pressões | **Pendência de playtest** (ADR-009/012) |
+| Sem faltas/cartões/escanteios/impedimentos | Sem regras de descontinuidade | Etapa 7 |
+| Chute sempre no gol | Simplificação do desfecho | ADR-012 |
+| Seleção por atributos (sem posições) | §87 não existe ainda | Etapa 7 |
+| Entrosamento/forma neutros | §17/§15 não rastreados | Futuro |
+
+### Arquivos criados/modificados
+
+| Arquivo | Motivo |
+|---------|--------|
+| `packages/match-engine/src/simulation.ts` | Simulação do ciclo (§52–§55) |
+| `packages/match-engine/src/engine.ts` | tick integra simulação + validação de elencos |
+| `packages/match-engine/src/match-state.ts` | Quebra de API (Player[]) + estado ampliado |
+| `packages/match-engine/src/index.ts` | Status/documentação da API |
+| `packages/match-engine/src/rating.ts` | Pesos recalibrados (medidos) |
+| `packages/match-engine/tests/engine.test.ts` | Atualizado para nova config |
+| `packages/match-engine/tests/integration.test.ts` | 8 testes da integração |
+| `packages/match-engine/tests/helpers.ts` | Helpers de jogadores |
+| `packages/match-engine/tests/rating.test.ts` | Constantes recalibradas |
+| `docs/02-DECISOES-TECNICAS.md` | ADR-012 + ADR-011 atualizado |
+| `docs/03-ROADMAP.md`, `docs/01-ARQUITETURA.md`, `docs/05-GUIA-DE-CONTINUACAO.md`, `README.md`, `packages/match-engine/README.md` | Status e API |
+
+### Impactos
+
+- **BREAKING**: quem usasse `homePlayerIds`/`awayPlayerIds` deve passar
+  `Player[]` (só existe uso interno — testes atualizados).
+- O motor agora produz partidas completas reproduzíveis (§104) com
+  eventos → estatísticas → notas encadeados.
+- Balanceamento ainda não representa futebol real — julgar o motor pelo
+  funcionamento, não pelos números atuais.
+
+### Como testar
+
+```bash
+npm test           # esperado: 93 testes passando
+npm run typecheck  # esperado: sem erros
+```
+
+### Pendências abertas
+
+- [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
+- [ ] Balanceamento: ~20 gols/partida (playtest — ADR-009/012).
+- [ ] Faltas, cartões, escanteios, impedimentos (etapa 7).
+- [ ] Próxima etapa: prova de conceito (GDD §113–114).
+
+---
+
 ## 2026-10-05 — Sessão 6: Motor etapa 6 — nota dos jogadores
 
 ### O que foi feito
@@ -69,7 +158,7 @@ npm run typecheck  # esperado: sem erros
 
 - [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
 - [ ] Constantes provisórias: decaimento, ações e nota (ajuste por playtest).
-- [ ] Integração de ações/eventos ao ciclo da partida (posicionamento).
+- [x] Integração de ações/eventos ao ciclo da partida (concluída na sessão 7 — ADR-012).
 - [ ] Próxima etapa: prova de conceito (GDD §113–114) — após integração.
 
 ---
@@ -155,7 +244,7 @@ npm run typecheck  # esperado: sem erros
 
 - [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
 - [ ] Constantes provisórias: decaimento e ações (ajuste por playtest).
-- [ ] Integração de ações/eventos ao ciclo da partida (posicionamento).
+- [x] Integração de ações/eventos ao ciclo da partida (concluída na sessão 7 — ADR-012).
 - [x] Próxima etapa: nota dos jogadores (concluída na sessão 6 — etapa 6 do roadmap).
 
 ---
@@ -235,7 +324,7 @@ npm run typecheck  # esperado: sem erros
 
 - [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
 - [ ] Constantes provisórias: decaimento e ações (ajuste por playtest).
-- [ ] Integração das ações ao ciclo da partida (posicionamento em campo).
+- [x] Integração das ações ao ciclo da partida (concluída na sessão 7 — ADR-012).
 - [x] Próxima etapa: aleatoriedade controlada (concluída na sessão 5 — etapa 4 do roadmap).
 
 ---

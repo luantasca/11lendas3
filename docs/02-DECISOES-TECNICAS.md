@@ -19,6 +19,7 @@
 | 009 | Modelo de chance por duelo para resolução de ações | ✅ Aceita |
 | 010 | Modelo de eventos, estatísticas e xG | ✅ Aceita |
 | 011 | Modelo de nota dos jogadores (rating) | ✅ Aceita |
+| 012 | Integração do ciclo: simulação por fases da posse | ✅ Aceita |
 
 ---
 
@@ -243,10 +244,13 @@ quanto** cada ação vale. §92 tem o campo `rating`.
 1. `getRatingContributions(evento)` converte eventos (etapa 5) em deltas;
    `computePlayerRatings(events, playerIds?)` soma tudo a partir de 6.0 e
    **limita à escala 1.0–10.0** — função pura e determinística.
-2. **Tabela de pesos PROVISÓRIA** (ajustar por playtest): Gol +0.8,
-   Assistência +0.4, Defesa +0.3, Passe completo +0.03, Desarme +0.1;
-   Passe falho −0.05, Chute fora −0.15, Falta/Impedimento −0.1,
-   Cartão amarelo −0.3, Cartão vermelho −0.8, Chute defendido −0.1.
+2. **Tabela de pesos PROVISÓRIA** (ajustar por playtest): Gol +0.4,
+   Assistência +0.2, Defesa +0.015, Passe completo +0.002, Desarme +0.001;
+   Passe falho −0.002, Chute fora −0.05, Falta/Impedimento −0.02,
+   Cartão amarelo −0.1, Cartão vermelho −0.5, Chute defendido −0.004.
+   **Recalibrados na sessão 7**: medido em partida real (~5.700 eventos),
+   os pesos originais saturavam o teto 10.0 em todos os jogadores e
+   anulavam a discriminação da §61.
 3. **Contratos de atribuição**: GOAL → `playerId` = marcador,
    `secondaryPlayerId` = assistidor; SAVE → `playerId` = goleiro,
    `secondaryPlayerId` = finalizador.
@@ -259,6 +263,47 @@ quanto** cada ação vale. §92 tem o campo `rating`.
   narração futura (§42).
 - ⚠️ Pesos provisórios — a nota "real" calibra por playtest; rating por
   minuto evolui junto com a integração ao ciclo.
+
+---
+
+## ADR-012 — Integração do ciclo: simulação por fases da posse
+
+**Contexto:** etapas 3–6 produziram funções independentes (ações, eventos,
+estatísticas, notas), mas o `tick()` só movia relógio e condição — nada
+alimentava os módulos. GDD §52–§55 descrevem o ciclo com posse, ações e
+eventos; §113 exige motor jogável antes da interface.
+
+**Decisão:**
+1. **Máquina de fases da posse** (§53): DEFESA → CONSTRUÇÃO → MEIO-CAMPO
+   → ATAQUE → ÚLTIMO TERÇO → CHANCE → FINALIZAÇÃO. Sucesso na ação avança
+   a fase; fracasso = perda de posse (+ evento TACKLE do defensor).
+2. **1 ação por ciclo** (1 s): 70% passe / 30% drible (**provisório**);
+   pressão adversária mapeada por fase (tabela provisória, crescente
+   perto do gol).
+3. **Finalização** (a partir de FINALIZAÇÃO): chute com xG pela tabela da
+   §60 (distância define fora-da-área/cara-a-cara), ângulo e distância
+   derivados da bola; gol ou defesa do goleiro; reposição no centro.
+4. **Elencos na config**: `homePlayers`/`awayPlayers: Player[]` (mínimo 3)
+   — **quebra de API** dos antigos `homePlayerIds` (atributos são
+   necessários para resolver ações).
+5. **Estado ganhou**: `events[]`, `home/awayPossessionSeconds` e
+   `lastPasserId` (assistência, contrato ADR-011).
+
+**Simplificações documentadas (não inventadas em silêncio):**
+- Sem faltas, cartões, escanteios, impedimentos e substituições —
+  exigem regras de descontinuidade (etapa 7).
+- Chute registrado sempre no gol (`noGol: true`) — sem "fora".
+- Goleiro/comparsas escolhidos por atributos (sem posições — §87 futuro).
+- Entrosamento neutro (50) e forma 0 — não rastreados ainda (§17, §15).
+- Balanceamento: partida real mede ~20 gols — calibração pendente.
+
+**Consequências:**
+- ✅ Partida completa gera eventos → estatísticas (§59) e notas (§61)
+  funcionam de verdade; determinismo preservado (mesma seed = mesma
+  partida, teste dedicado).
+- ✅ Base direta para a prova de conceito (etapa 7) e replay (§108).
+- ⚠️ Balanceamento e regras de descontinuidade são trabalho próximo
+  registrado no roadmap/registro.
 
 ---
 

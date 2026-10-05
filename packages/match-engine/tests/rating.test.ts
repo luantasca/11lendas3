@@ -39,16 +39,16 @@ describe("getRatingContributions — contribuições por ação (§61)", () => {
       evento({ type: "GOAL", playerId: "atacante", secondaryPlayerId: "meia" })
     );
     expect(contrib).toHaveLength(2);
-    expect(contrib[0]).toMatchObject({ playerId: "atacante", delta: 0.8, reason: "Gol" });
-    expect(contrib[1]).toMatchObject({ playerId: "meia", delta: 0.4, reason: "Assistência" });
+    expect(contrib[0]).toMatchObject({ playerId: "atacante", delta: 0.4, reason: "Gol" });
+    expect(contrib[1]).toMatchObject({ playerId: "meia", delta: 0.2, reason: "Assistência" });
   });
 
   it("SAVE aumenta o goleiro e diminui o finalizador", () => {
     const contrib = getRatingContributions(
       evento({ type: "SAVE", playerId: "gk", secondaryPlayerId: "chutador" })
     );
-    expect(contrib[0]).toMatchObject({ playerId: "gk", delta: 0.3 });
-    expect(contrib[1]).toMatchObject({ playerId: "chutador", delta: -0.1 });
+    expect(contrib[0]).toMatchObject({ playerId: "gk", delta: 0.015 });
+    expect(contrib[1]).toMatchObject({ playerId: "chutador", delta: -0.004 });
     expect(contrib[0]!.delta).toBeGreaterThan(0);
     expect(contrib[1]!.delta).toBeLessThan(0);
   });
@@ -113,12 +113,12 @@ describe("computePlayerRatings — nota final (§61)", () => {
   });
 
   it("soma as ações positivas e negativas do jogador", () => {
-    // j1: um gol (+0.8) e uma falta (-0.1) => 6.7
+    // j1: um gol (+0.4) e uma falta (-0.02) => 6.38
     const notas = computePlayerRatings([
       evento({ type: "GOAL", playerId: "j1" }),
       evento({ type: "FOUL", playerId: "j1" }),
     ]);
-    expect(notas["j1"]).toBeCloseTo(6.7, 10);
+    expect(notas["j1"]).toBeCloseTo(6.38, 10);
   });
 
   it("respeita o piso da escala (nunca abaixo de 1.0)", () => {

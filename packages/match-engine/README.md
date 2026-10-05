@@ -16,7 +16,8 @@ que deve ser **independente da interface** (seção 103) e **determinístico**
 | 4 | Aleatoriedade controlada embutida nas ações | ✅ Concluída |
 | 5 | Eventos, estatísticas e xG | ✅ Concluída |
 | 6 | Nota dos jogadores | ✅ Concluída |
-| 7 | Prova de conceito (campo 2D, narração, táticas ao vivo) | ⬜ Próxima (após integração ao ciclo) |
+| — | **Integração do ciclo**: `tick()` gera jogadas, gols e eventos (ADR-012) | ✅ Concluída |
+| 7 | Prova de conceito (campo 2D, narração, táticas ao vivo) | ⬜ Próxima |
 
 > A ordem das etapas segue `docs/03-ROADMAP.md`. Não implementar etapas
 > posteriores sem antes documentar a decisão.
@@ -51,8 +52,9 @@ const engine = createMatchEngine({
   seed: 918281982,              // match_seed (GDD §104)
   homeClubId: "casa",
   awayClubId: "fora",
-  homePlayerIds: ["p1", "p2"],  // escalação (posições entram na etapa 3)
-  awayPlayerIds: ["p3", "p4"],
+  // Elencos COM atributos (GDD §10/§103) — mínimo 3 por clube:
+  homePlayers: [jogador("p1"), jogador("p2"), jogador("p3")],
+  awayPlayers: [jogador("p4"), jogador("p5"), jogador("p6")],
   tempo: "NORMAL",              // GDD §47 (opcional, padrão NORMAL)
   pressing: "NORMAL",           // GDD §48 (opcional, padrão NORMAL)
   initialCondition: 100,        // GDD §16 (opcional, padrão 100)
@@ -65,14 +67,19 @@ engine.tick();  // avança 1 ciclo = 1 segundo (GDD §52)
 
 Cada `tick()` devolve um **novo** objeto de estado (imutável) e atualiza:
 relógio (`gameSecond`), condição física de todos os jogadores (decaimento
-provisório influenciado por ritmo/pressão — §47/§48) e `status` (a partida
-encerra em `MATCH_DURATION_SECONDS` = 5400 s = 90 min).
+provisório influenciado por ritmo/pressão — §47/§48), `status` (encerra em
+`MATCH_DURATION_SECONDS` = 5400 s = 90 min), linha de posse (§52) — e
+**simula a jogada do segundo** (ADR-012): fases da posse (§53),
+passes/dribles por atributos (§55), finalizações com xG (§60), gols e
+eventos (§91) alimentando estatísticas (§59) e notas (§61).
 
-**Premissas desta etapa** (detalhes em `docs/REGISTRO-DE-ALTERACOES.md`):
-duração de 90 min, constantes de decaimento provisórias de equilíbrio,
-fase inicial `CONSTRUCAO` e campo 2D normalizado 0–100. Transições de
-fase, movimentação da bola, eventos e estatísticas pertencem às etapas
-posteriores — ainda **não implementados**.
+**Premissas e simplificações** (detalhes em `docs/REGISTRO-DE-ALTERACOES.md`
+e ADR-012): duração de 90 min, campo normalizado 0–100, fase inicial
+`CONSTRUCAO`, constantes provisórias. A integração **ainda não gera**
+faltas, cartões, escanteios, impedimentos ou substituições; o chute é
+sempre registrado no gol; seleção de goleiro/comparsas por atributos
+(posições entram na etapa 7); entrosamento/forma neutros. O placar típico
+hoje é alto (~20 gols) — **calibração de playtest pendente**.
 
 ### Ações por atributos (etapa 3)
 
@@ -101,9 +108,8 @@ const resultado = resolvePass(contexto, engine.rng);
 Idem `resolveDribble(atacante, marcador)` e
 `resolveShot({ atacante, goleiro, usandoPeDominante, angulo, distancia, pressao })`.
 
-> Ações são **funções independentes** — ainda não rodam dentro do ciclo
-> da partida (integração futura, ver roadmap). Constantes de equilíbrio
-> provisórias: ADR-009.
+> Desde a **integração do ciclo** (ADR-012) as ações rodam dentro do
+> `tick()`; constantes de equilíbrio seguem provisórias (ADR-009).
 
 ### Eventos, xG e estatísticas (etapa 5)
 

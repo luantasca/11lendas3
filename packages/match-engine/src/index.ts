@@ -4,15 +4,17 @@
  * Motor de partidas independente da interface (GDD §103), com simulação
  * determinística por seed (GDD §104).
  *
- * Status: etapa 6 do roadmap — nota dos jogadores (GDD §61).
- * Ver packages/match-engine/README.md e docs/03-ROADMAP.md.
+ * Status: integração do ciclo concluída — o tick() gera jogadas, gols,
+ * eventos, estatísticas e notas (ADR-012). Próxima: etapa 7, prova de
+ * conceito (GDD §113–114). Ver packages/match-engine/README.md e
+ * docs/03-ROADMAP.md.
  */
 
 // --- Infraestrutura determinística (etapa 1) ---
 export { createRng } from "./rng.js";
 export type { Rng } from "./rng.js";
 
-// --- Estado e ciclo de simulação (etapa 2) ---
+// --- Estado e ciclo de simulação (etapa 2 + integração, ADR-012) ---
 export { createMatchEngine } from "./engine.js";
 export type { MatchEngine } from "./engine.js";
 export { MATCH_DURATION_SECONDS } from "./match-state.js";

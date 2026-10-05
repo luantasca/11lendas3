@@ -14,12 +14,11 @@
 2. **Deixar o ambiente verde:**
    ```bash
    npm install
-   npm test           # esperado: 85 testes passando
+   npm test           # esperado: 93 testes passando
    npm run typecheck  # sem erros
    ```
-3. **Escolher a próxima etapa** pelo roadmap (hoje: **integração de
-   ações/eventos ao ciclo** e depois **etapa 7 — prova de conceito**,
-   GDD §113–114).
+3. **Escolher a próxima etapa** pelo roadmap (hoje: **etapa 7 — prova de
+   conceito**, GDD §113–114: campo 2D, narração, táticas ao vivo).
 4. **Após cada tarefa:** atualizar registro, roadmap e README do pacote.
 
 ## Comandos úteis
@@ -32,7 +31,7 @@
 | `npm test -w @manager/match-engine` | Testes só do motor |
 | `npm run test:watch -w @manager/match-engine` | Testes em modo observador |
 
-## Estado conhecido do projeto (após sessão 6 — 2026-10-05)
+## Estado conhecido do projeto (após sessão 7 — 2026-10-05)
 
 **Funcionando:**
 - Monorepo com npm workspaces, TypeScript strict e Vitest.
@@ -48,22 +47,23 @@
     estatísticas (`computeMatchStats`, §59) — ADR-010;
   - etapa 6: nota dos jogadores (`computePlayerRatings`, §61, escala
     1.0–10.0, pesos provisórios) — ADR-011;
-  - 85 testes passando.
+  - **integração do ciclo** (ADR-012): `tick()` gera jogadas — fases
+    (§53), ações (§55), gols, eventos, estatísticas e notas alimentados;
+  - 93 testes passando.
 - Repositório Git no GitHub com deploy key SSH (push funcional).
 
 **Pendências abertas:**
 - Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
 - Constantes de decaimento e de chance são provisórias (ajuste por playtest).
-- Integração de ações e eventos ao ciclo da partida (exige posicionamento
-  em campo) — o ciclo ainda não gera eventos sozinho.
-- Próximos passos: integração de ações/eventos ao ciclo → etapa 7
-  (prova de conceito, GDD §113–114).
+- Balanceamento: partida real mede ~20 gols (calibração de playtest).
+- Faltas, cartões, escanteios e impedimentos não são gerados ainda (etapa 7).
+- Próximo passo: etapa 7 — prova de conceito (GDD §113–114).
 
 **Não existe ainda (não inventar ao ler o código):**
 app web, banco de dados, autenticação, liga, draft, transferências,
-interface de partida, WebSocket, transições de fase de posse, movimentação
-da bola, narração, gols gerados pelo ciclo — eventos e estatísticas existem
-como **módulos**, mas nada os alimenta automaticamente ainda.
+interface de partida, WebSocket, campo 2D com jogadores posicionados,
+narração, táticas ao vivo, substituições, faltas, cartões, escanteios e
+impedimentos (regras de descontinuidade — etapa 7).
 
 ## Regras permanentes da sessão
 
