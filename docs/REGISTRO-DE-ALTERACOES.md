@@ -6,6 +6,74 @@
 
 ---
 
+## 2026-10-05 — Sessão 6: Motor etapa 6 — nota dos jogadores
+
+### O que foi feito
+
+1. **`packages/match-engine/src/rating.ts`** — nota dos jogadores
+   conforme GDD §61:
+   - constantes `RATING_INITIAL = 6.0`, `RATING_MIN = 1.0`,
+     `RATING_MAX = 10.0` (valores exatos da §61);
+   - `getRatingContributions(evento)` — converte eventos (etapa 5) em
+     deltas com `reason` em PT-BR ("Gol", "Defesa", "Cartão vermelho"...);
+   - `computePlayerRatings(events, playerIds?)` — função pura: todos
+     começam em 6.0, somam deltas e são limitados à escala 1.0–10.0.
+2. **15 novos testes** (total do pacote: 85): constantes da §61,
+   contribuições por ação (GOAL/SAVE/PASS/SHOT/CARD/FOUL/OFFSIDE/TACKLE),
+   eventos neutros, soma de deltas, clamps de piso/teto, determinismo e
+   elenco completo sem eventos.
+3. **Documentação**: ADR-011, roadmap (etapa 6 ✅ — só resta a 7),
+   READMEs, guia, árvore de arquitetura.
+
+### Motivo
+
+Pedido direto: "pode fazer a etapa 6 completa" — próximo item do roadmap
+(prioridade §113).
+
+### Decisões e premissas registradas
+
+| Item | Decisão | Ref |
+|------|---------|-----|
+| Pesos por ação | Tabela PROVISÓRIA (GDD não informa): Gol +0.8, Assist. +0.4, Defesa +0.3, Passe completo +0.03, Desarme +0.1; Passe falho −0.05, Chute fora −0.15, Falta/Impedimento −0.1, Amarelo −0.3, Vermelho −0.8, Chute defendido −0.1 | ADR-011 |
+| Atribuição GOAL | `playerId` = marcador; `secondaryPlayerId` = assistidor | ADR-011 |
+| Atribuição SAVE | `playerId` = goleiro; `secondaryPlayerId` = finalizador | ADR-011 |
+| Gol sofrido | Sem penalização individual (eventos não identificam erro) — limitação documentada | ADR-011 |
+| Jogador sem ações | Mantém 6.0 | §61 |
+
+### Arquivos criados/modificados
+
+| Arquivo | Motivo |
+|---------|--------|
+| `packages/match-engine/src/rating.ts` | Nota dos jogadores (§61) |
+| `packages/match-engine/src/index.ts` | Exportar API da nota |
+| `packages/match-engine/tests/rating.test.ts` | 15 testes da etapa 6 |
+| `docs/02-DECISOES-TECNICAS.md` | ADR-011 |
+| `docs/03-ROADMAP.md` | Etapa 6 ✅ / próximos passos |
+| `docs/01-ARQUITETURA.md`, `docs/05-GUIA-DE-CONTINUACAO.md`, `README.md`, `packages/match-engine/README.md` | Status e API |
+
+### Impactos
+
+- Camada de dados do motor completa: eventos → estatísticas → xG → nota.
+- A nota só é calculada quando há eventos — ainda **não há alimentação
+  automática pelo ciclo** (integração pendente).
+- Pesos provisórios: calibrar por playtest antes de confiar em números.
+
+### Como testar
+
+```bash
+npm test           # esperado: 85 testes passando
+npm run typecheck  # esperado: sem erros
+```
+
+### Pendências abertas
+
+- [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
+- [ ] Constantes provisórias: decaimento, ações e nota (ajuste por playtest).
+- [ ] Integração de ações/eventos ao ciclo da partida (posicionamento).
+- [ ] Próxima etapa: prova de conceito (GDD §113–114) — após integração.
+
+---
+
 ## 2026-10-05 — Sessão 5: Motor etapas 4 e 5 — aleatoriedade controlada, eventos, estatísticas e xG
 
 ### O que foi feito
@@ -88,7 +156,7 @@ npm run typecheck  # esperado: sem erros
 - [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
 - [ ] Constantes provisórias: decaimento e ações (ajuste por playtest).
 - [ ] Integração de ações/eventos ao ciclo da partida (posicionamento).
-- [ ] Próxima etapa: nota dos jogadores (GDD §61).
+- [x] Próxima etapa: nota dos jogadores (concluída na sessão 6 — etapa 6 do roadmap).
 
 ---
 

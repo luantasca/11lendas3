@@ -17,10 +17,11 @@
 | 3 | Resolução de ações por atributos (passe, drible, finalização) | §54, §55, §57 | ✅ Concluída (2026-10-05) |
 | 4 | Aleatoriedade controlada embutida nas ações | §56 | ✅ Concluída (2026-10-05) |
 | 5 | Eventos, estatísticas e xG | §59, §60, §91 | ✅ Concluída (2026-10-05) |
-| 6 | Nota dos jogadores | §61 | ⬜ Próxima |
+| 6 | Nota dos jogadores | §61 | ✅ Concluída (2026-10-05) |
 | 7 | Prova de conceito: Time A × Time B, campo 2D + narração, alterações táticas e substituições | §113, §114 | ⬜ Não iniciada |
 
-> **Próxima:** etapa 6 — nota dos jogadores (§61).
+> **Próximos passos:** (1) integração de ações/eventos ao ciclo — ver obs.
+> abaixo; (2) etapa 7 — prova de conceito (§113–114), primeira interface.
 >
 > Obs.: as ações (etapa 3) e os módulos de eventos/estatísticas (etapa 5)
 > são funções independentes e **ainda não estão integradas ao ciclo da

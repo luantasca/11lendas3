@@ -20,7 +20,8 @@ financeira) e um **Técnico** (gestão esportiva e partidas).
 | `match-engine` — ações por atributos: passe, drible, finalização (etapa 3) | ✅ Concluído |
 | `match-engine` — aleatoriedade controlada (etapa 4) | ✅ Concluído |
 | `match-engine` — eventos, estatísticas e xG (etapa 5) | ✅ Concluído |
-| `match-engine` — demais etapas do motor | ⬜ Não iniciadas |
+| `match-engine` — nota dos jogadores (etapa 6) | ✅ Concluído |
+| `match-engine` — prova de conceito (etapa 7) | ⬜ Não iniciada |
 | App web, banco de dados, autenticação, draft, liga | ⬜ Não iniciados |
 
 > Repositório Git: [github.com/luantasca/11lendas3](https://github.com/luantasca/11lendas3)

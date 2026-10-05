@@ -14,11 +14,12 @@
 2. **Deixar o ambiente verde:**
    ```bash
    npm install
-   npm test           # esperado: 70 testes passando
+   npm test           # esperado: 85 testes passando
    npm run typecheck  # sem erros
    ```
-3. **Escolher a próxima etapa** pelo roadmap (hoje: **etapa 6 do motor** —
-   nota dos jogadores, GDD §61).
+3. **Escolher a próxima etapa** pelo roadmap (hoje: **integração de
+   ações/eventos ao ciclo** e depois **etapa 7 — prova de conceito**,
+   GDD §113–114).
 4. **Após cada tarefa:** atualizar registro, roadmap e README do pacote.
 
 ## Comandos úteis
@@ -31,7 +32,7 @@
 | `npm test -w @manager/match-engine` | Testes só do motor |
 | `npm run test:watch -w @manager/match-engine` | Testes em modo observador |
 
-## Estado conhecido do projeto (após sessão 5 — 2026-10-05)
+## Estado conhecido do projeto (após sessão 6 — 2026-10-05)
 
 **Funcionando:**
 - Monorepo com npm workspaces, TypeScript strict e Vitest.
@@ -45,7 +46,9 @@
     estatísticos (§56, `tests/controlled-randomness.test.ts`);
   - etapa 5: eventos (`criarEvento`, §91), xG (`calcularXg`, §60) e
     estatísticas (`computeMatchStats`, §59) — ADR-010;
-  - 70 testes passando.
+  - etapa 6: nota dos jogadores (`computePlayerRatings`, §61, escala
+    1.0–10.0, pesos provisórios) — ADR-011;
+  - 85 testes passando.
 - Repositório Git no GitHub com deploy key SSH (push funcional).
 
 **Pendências abertas:**
@@ -53,7 +56,8 @@
 - Constantes de decaimento e de chance são provisórias (ajuste por playtest).
 - Integração de ações e eventos ao ciclo da partida (exige posicionamento
   em campo) — o ciclo ainda não gera eventos sozinho.
-- Próxima etapa: nota dos jogadores (GDD §61).
+- Próximos passos: integração de ações/eventos ao ciclo → etapa 7
+  (prova de conceito, GDD §113–114).
 
 **Não existe ainda (não inventar ao ler o código):**
 app web, banco de dados, autenticação, liga, draft, transferências,

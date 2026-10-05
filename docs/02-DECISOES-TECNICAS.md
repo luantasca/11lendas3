@@ -18,6 +18,7 @@
 | 008 | Motor por ciclos com estado imutável e RNG interno | ✅ Aceita |
 | 009 | Modelo de chance por duelo para resolução de ações | ✅ Aceita |
 | 010 | Modelo de eventos, estatísticas e xG | ✅ Aceita |
+| 011 | Modelo de nota dos jogadores (rating) | ✅ Aceita |
 
 ---
 
@@ -229,6 +230,35 @@ banco (§84–101) e com a narração/replay (§42, §108).
 - ✅ Camada de banco futura mapeia direto para a tabela da §91.
 - ⚠️ O ciclo ainda não gera eventos automaticamente — integração pendente
   (ver roadmap); estatísticas só existem quando há eventos para agregar.
+
+---
+
+## ADR-011 — Modelo de nota dos jogadores (rating)
+
+**Contexto:** GDD §61 define nota inicial 6.0, escala 1.0–10.0 e que
+"ações positivas aumentam, negativas diminuem" — mas **não informa
+quanto** cada ação vale. §92 tem o campo `rating`.
+
+**Decisão:**
+1. `getRatingContributions(evento)` converte eventos (etapa 5) em deltas;
+   `computePlayerRatings(events, playerIds?)` soma tudo a partir de 6.0 e
+   **limita à escala 1.0–10.0** — função pura e determinística.
+2. **Tabela de pesos PROVISÓRIA** (ajustar por playtest): Gol +0.8,
+   Assistência +0.4, Defesa +0.3, Passe completo +0.03, Desarme +0.1;
+   Passe falho −0.05, Chute fora −0.15, Falta/Impedimento −0.1,
+   Cartão amarelo −0.3, Cartão vermelho −0.8, Chute defendido −0.1.
+3. **Contratos de atribuição**: GOAL → `playerId` = marcador,
+   `secondaryPlayerId` = assistidor; SAVE → `playerId` = goleiro,
+   `secondaryPlayerId` = finalizador.
+4. **Limitação**: sem penalização de gol sofrido para a defesa — os
+   eventos não identificam quem errou (documentado, não inventado).
+5. Jogador sem ações relevantes fica com a nota inicial 6.0.
+
+**Consequências:**
+- ✅ Simples, testável e determinístico; `reason` em PT-BR já prepara a
+  narração futura (§42).
+- ⚠️ Pesos provisórios — a nota "real" calibra por playtest; rating por
+  minuto evolui junto com a integração ao ciclo.
 
 ---
 

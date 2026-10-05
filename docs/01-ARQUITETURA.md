@@ -60,13 +60,15 @@ flowchart TD
         │   ├── actions.ts         # Passe, drible, finalização (etapa 3)
         │   ├── events.ts          # Eventos da partida (etapa 5, §91)
         │   ├── xg.ts              # xG (etapa 5, §60)
-        │   └── stats.ts           # Estatísticas (etapa 5, §59)
+        │   ├── stats.ts           # Estatísticas (etapa 5, §59)
+        │   └── rating.ts          # Nota dos jogadores (etapa 6, §61)
         └── tests/
             ├── rng.test.ts                # Testes com valores golden
             ├── engine.test.ts             # Ciclo, condição e determinismo
             ├── actions.test.ts            # Chance, sensibilidade e validações
             ├── controlled-randomness.test.ts  # Propriedades estatísticas (§56)
-            └── stats.test.ts              # Eventos, xG e estatísticas (§59–60)
+            ├── stats.test.ts              # Eventos, xG e estatísticas (§59–60)
+            └── rating.test.ts             # Nota dos jogadores (§61)
 ```
 
 ## 3. Arquitetura alvo do motor (prevista no GDD §106)

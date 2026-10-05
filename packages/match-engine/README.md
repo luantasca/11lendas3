@@ -15,8 +15,8 @@ que deve ser **independente da interface** (seção 103) e **determinístico**
 | 3 | Resolução de ações por atributos (passe, drible, finalização) | ✅ Concluída |
 | 4 | Aleatoriedade controlada embutida nas ações | ✅ Concluída |
 | 5 | Eventos, estatísticas e xG | ✅ Concluída |
-| 6 | Nota dos jogadores | ⬜ Próxima |
-| 7 | Prova de conceito (campo 2D, narração, táticas ao vivo) | ⬜ Não iniciada |
+| 6 | Nota dos jogadores | ✅ Concluída |
+| 7 | Prova de conceito (campo 2D, narração, táticas ao vivo) | ⬜ Próxima (após integração ao ciclo) |
 
 > A ordem das etapas segue `docs/03-ROADMAP.md`. Não implementar etapas
 > posteriores sem antes documentar a decisão.
@@ -136,6 +136,20 @@ const stats = computeMatchStats({
 > Aleatoriedade controlada (etapa 4, §56) é garantida pelos clamps de
 > chance e comprovada por testes estatísticos em
 > `tests/controlled-randomness.test.ts` (10.000 tentativas por propriedade).
+
+### Nota dos jogadores (etapa 6)
+
+```ts
+import { computePlayerRatings, RATING_INITIAL } from "@manager/match-engine";
+
+// Nota inicial 6.0, escala 1.0–10.0 (GDD §61) — derivada dos eventos:
+const notas = computePlayerRatings(events, ["p1", "p2", "p3"]);
+// { p1: 7.4, p2: 6.0, p3: 5.7, ... }
+```
+
+Pesos por ação são **provisórios** (ADR-011); cada contribuição carrega
+um `reason` em PT-BR (ex.: "Gol", "Defesa", "Cartão vermelho") pronto
+para a narração futura (§42).
 
 ## Comandos
 

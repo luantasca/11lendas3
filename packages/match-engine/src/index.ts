@@ -4,7 +4,7 @@
  * Motor de partidas independente da interface (GDD §103), com simulação
  * determinística por seed (GDD §104).
  *
- * Status: etapa 5 do roadmap — eventos, estatísticas e xG (GDD §59–60, §91).
+ * Status: etapa 6 do roadmap — nota dos jogadores (GDD §61).
  * Ver packages/match-engine/README.md e docs/03-ROADMAP.md.
  */
 
@@ -50,3 +50,13 @@ export { calcularXg } from "./xg.js";
 export type { ShotType } from "./xg.js";
 export { computeMatchStats } from "./stats.js";
 export type { MatchStats, MatchStatsInput, TeamStats } from "./stats.js";
+
+// --- Nota dos jogadores (etapa 6) ---
+export {
+  RATING_INITIAL,
+  RATING_MAX,
+  RATING_MIN,
+  computePlayerRatings,
+  getRatingContributions,
+} from "./rating.js";
+export type { RatingContribution } from "./rating.js";
