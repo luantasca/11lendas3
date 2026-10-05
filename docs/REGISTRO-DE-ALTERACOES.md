@@ -168,7 +168,7 @@ npm run typecheck  # esperado: sem erros
 - [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
 - [ ] Constantes provisórias: decaimento e ações (ajuste por playtest).
 - [ ] Integração das ações ao ciclo da partida (posicionamento em campo).
-- [ ] Próxima etapa: aleatoriedade controlada (GDD §56).
+- [x] Próxima etapa: aleatoriedade controlada (concluída na sessão 5 — etapa 4 do roadmap).
 
 ---
 
