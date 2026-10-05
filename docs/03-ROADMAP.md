@@ -15,16 +15,18 @@
 | 1 | RNG determinístico com seed | §104 | ✅ Concluída (2026-10-05) |
 | 2 | Estado da partida e ciclo de simulação (1 ciclo = 1s) | §52, §53 | ✅ Concluída (2026-10-05) |
 | 3 | Resolução de ações por atributos (passe, drible, finalização) | §54, §55, §57 | ✅ Concluída (2026-10-05) |
-| 4 | Aleatoriedade controlada embutida nas ações | §56 | ⬜ Não iniciada |
-| 5 | Eventos, estatísticas e xG | §59, §60, §91 | ⬜ Não iniciada |
-| 6 | Nota dos jogadores | §61 | ⬜ Não iniciada |
+| 4 | Aleatoriedade controlada embutida nas ações | §56 | ✅ Concluída (2026-10-05) |
+| 5 | Eventos, estatísticas e xG | §59, §60, §91 | ✅ Concluída (2026-10-05) |
+| 6 | Nota dos jogadores | §61 | ⬜ Próxima |
 | 7 | Prova de conceito: Time A × Time B, campo 2D + narração, alterações táticas e substituições | §113, §114 | ⬜ Não iniciada |
 
-> **Próxima:** etapa 4 — aleatoriedade controlada (§56).
+> **Próxima:** etapa 6 — nota dos jogadores (§61).
 >
-> Obs.: as ações da etapa 3 são funções independentes e **ainda não estão
-> integradas ao ciclo da partida** (etapa 2) — a integração exige
-> posicionamento em campo e acontece na preparação da prova de conceito (§113).
+> Obs.: as ações (etapa 3) e os módulos de eventos/estatísticas (etapa 5)
+> são funções independentes e **ainda não estão integradas ao ciclo da
+> partida** (etapa 2) — o ciclo ainda não gera eventos sozinho. A integração
+> exige posicionamento em campo e acontece na preparação da prova de
+> conceito (§113).
 
 > Critério da prova de conceito (§114): responder
 > **"É divertido assistir e comandar uma partida?"** — sem mercado, estádio,

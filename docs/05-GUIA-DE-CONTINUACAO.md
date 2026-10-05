@@ -14,11 +14,11 @@
 2. **Deixar o ambiente verde:**
    ```bash
    npm install
-   npm test           # esperado: 53 testes passando
+   npm test           # esperado: 70 testes passando
    npm run typecheck  # sem erros
    ```
-3. **Escolher a próxima etapa** pelo roadmap (hoje: **etapa 4 do motor** —
-   aleatoriedade controlada, GDD §56).
+3. **Escolher a próxima etapa** pelo roadmap (hoje: **etapa 6 do motor** —
+   nota dos jogadores, GDD §61).
 4. **Após cada tarefa:** atualizar registro, roadmap e README do pacote.
 
 ## Comandos úteis
@@ -31,30 +31,35 @@
 | `npm test -w @manager/match-engine` | Testes só do motor |
 | `npm run test:watch -w @manager/match-engine` | Testes em modo observador |
 
-## Estado conhecido do projeto (após sessão 4 — 2026-10-05)
+## Estado conhecido do projeto (após sessão 5 — 2026-10-05)
 
 **Funcionando:**
 - Monorepo com npm workspaces, TypeScript strict e Vitest.
 - Pacote `@manager/match-engine`:
   - etapa 1: RNG determinístico (`createRng`);
-  - etapa 2: estado da partida e ciclo de simulação
-    (`createMatchEngine` + `tick()`, imutável, com decaimento de condição);
+  - etapa 2: estado da partida e ciclo de simulação (`createMatchEngine` +
+    `tick()`, imutável, com decaimento de condição);
   - etapa 3: ações por atributos (`calcPassChance`, `resolveDribble`,
-    `resolveShot` etc. — funções independentes, ADR-009);
-  - 53 testes passando.
+    `resolveShot` — funções independentes, ADR-009);
+  - etapa 4: aleatoriedade controlada comprovada por testes
+    estatísticos (§56, `tests/controlled-randomness.test.ts`);
+  - etapa 5: eventos (`criarEvento`, §91), xG (`calcularXg`, §60) e
+    estatísticas (`computeMatchStats`, §59) — ADR-010;
+  - 70 testes passando.
 - Repositório Git no GitHub com deploy key SSH (push funcional).
 
 **Pendências abertas:**
 - Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
 - Constantes de decaimento e de chance são provisórias (ajuste por playtest).
-- Integração das ações ao ciclo da partida (exige posicionamento em campo).
-- Próxima etapa: aleatoriedade controlada (GDD §56).
+- Integração de ações e eventos ao ciclo da partida (exige posicionamento
+  em campo) — o ciclo ainda não gera eventos sozinho.
+- Próxima etapa: nota dos jogadores (GDD §61).
 
 **Não existe ainda (não inventar ao ler o código):**
 app web, banco de dados, autenticação, liga, draft, transferências,
 interface de partida, WebSocket, transições de fase de posse, movimentação
-da bola, eventos, estatísticas e xG — e as ações **ainda não rodam dentro
-do ciclo** da partida (são funções independentes).
+da bola, narração, gols gerados pelo ciclo — eventos e estatísticas existem
+como **módulos**, mas nada os alimenta automaticamente ainda.
 
 ## Regras permanentes da sessão
 

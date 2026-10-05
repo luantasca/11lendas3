@@ -6,6 +6,92 @@
 
 ---
 
+## 2026-10-05 — Sessão 5: Motor etapas 4 e 5 — aleatoriedade controlada, eventos, estatísticas e xG
+
+### O que foi feito
+
+**Etapa 4 — Aleatoriedade controlada (GDD §56):**
+1. `tests/controlled-randomness.test.ts` — 6 testes estatísticos com
+   10.000 tentativas cada, comprovando as três frases da §56:
+   - frequência empírica ≈ chance declarada (±3 p.p.) — "controlada";
+   - melhor jogador vence com clara frequência superior;
+   - "Cristiano Ronaldo pode perder um gol" (favorito com chance 0.80
+     perde > 1.500 de 10.000) e "jogador limitado pode marcar um golaço"
+     (chance 0.01 marca > 30 de 10.000);
+   - passe e drible também respeitam a chance declarada;
+   - determinismo: mesma seed → 10.000 desfechos idênticos (§104).
+   Observação: a implementação (sorteio `rng.next() < chance` + clamps)
+   já existia desde a etapa 3 — a etapa 4 **trancou o contrato** com
+   provas estatísticas.
+
+**Etapa 5 — Eventos, estatísticas e xG (GDD §59, §60, §91):**
+2. **`src/events.ts`** — `MatchEvent` com os campos da §91 (game_second,
+   type, club_id, player_id, secondary_player_id, metadata) e os 9 tipos
+   originais + extensões `TACKLE`/`CORNER` (necessárias para desarmes e
+   escanteios da §59); `criarEvento()` valida com mensagens em PT-BR.
+3. **`src/xg.ts`** — `calcularXg(tipo)` com a tabela exata da §60:
+   fora da área 0.05, cabeçada 0.12, cara a cara 0.42, pênalti 0.76.
+4. **`src/stats.ts`** — `computeMatchStats()`: função pura que agrega a
+   §59 (posse, finalizações, no gol, xG, passes, precisão, desarmes,
+   escanteios, faltas, cartões) a partir de eventos + posse da linha do
+   tempo dos ciclos.
+5. **11 novos testes de eventos/xG/estatísticas** (total do pacote: 70).
+6. **Documentação**: ADR-010, roadmap (etapas 4 e 5 ✅), READMEs, guia,
+   árvore de arquitetura.
+
+### Motivo
+
+Pedido direto: "pode fazer a etapa 4 e 5" — próximos itens do roadmap
+(prioridade §113).
+
+### Decisões e premissas registradas
+
+| Item | Decisão | Ref |
+|------|---------|-----|
+| `id`/`match_id` nos eventos | Fora (camada de persistência futura) | ADR-010 |
+| Tipos `TACKLE`/`CORNER` | Extensão documentada da lista da §91 | ADR-010 |
+| Metadata de SHOT/PASS/CARD | `{ xg, noGol }`, `{ sucesso }`, `{ cor }` | ADR-010 |
+| xG | Tabela exata da §60; modelagem contínua = calibração futura | ADR-010 |
+| Posse | Derivada da linha do tempo dos ciclos, não de eventos | ADR-010 |
+| Sem dados de posse | posse = 0 (não inventa informação) | teste |
+
+### Arquivos criados/modificados
+
+| Arquivo | Motivo |
+|---------|--------|
+| `packages/match-engine/src/events.ts` | Modelo de eventos (§91) |
+| `packages/match-engine/src/xg.ts` | xG (§60) |
+| `packages/match-engine/src/stats.ts` | Estatísticas (§59) |
+| `packages/match-engine/src/index.ts` | Exportar nova API |
+| `packages/match-engine/tests/controlled-randomness.test.ts` | 6 testes da §56 |
+| `packages/match-engine/tests/stats.test.ts` | 11 testes de eventos/xG/stats |
+| `docs/02-DECISOES-TECNICAS.md` | ADR-010 |
+| `docs/03-ROADMAP.md` | Etapas 4 e 5 ✅, próxima: 6 |
+| `docs/01-ARQUITETURA.md`, `docs/05-GUIA-DE-CONTINUACAO.md`, `README.md`, `packages/match-engine/README.md` | Status, API e árvore |
+
+### Impactos
+
+- Motor ganhou vocabulário de eventos pronto para narração (§42), replay
+  (§108) e banco futuro (§91) — **mas o ciclo ainda não gera eventos
+  automaticamente** (integração pendente, exige posicionamento em campo).
+- Estatísticas/xG só existem quando há eventos para agregar.
+
+### Como testar
+
+```bash
+npm test           # esperado: 70 testes passando
+npm run typecheck  # esperado: sem erros
+```
+
+### Pendências abertas
+
+- [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
+- [ ] Constantes provisórias: decaimento e ações (ajuste por playtest).
+- [ ] Integração de ações/eventos ao ciclo da partida (posicionamento).
+- [ ] Próxima etapa: nota dos jogadores (GDD §61).
+
+---
+
 ## 2026-10-05 — Sessão 4: Motor etapa 3 — ações por atributos
 
 ### O que foi feito

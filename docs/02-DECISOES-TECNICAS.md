@@ -17,6 +17,7 @@
 | 007 | Idioma: código em inglês, documentação em PT-BR | ✅ Aceita |
 | 008 | Motor por ciclos com estado imutável e RNG interno | ✅ Aceita |
 | 009 | Modelo de chance por duelo para resolução de ações | ✅ Aceita |
+| 010 | Modelo de eventos, estatísticas e xG | ✅ Aceita |
 
 ---
 
@@ -197,6 +198,37 @@ modelo simples, testável e ajustável.
 - ✅ Sorteio já usa o RNG da seed — reprodução integral garantida.
 - ⚠️ Balanceamento real (taxas de gol/passe parecidas com futebol) só
   acontece nas etapas 4–5; não julgar equilíbrio pelos valores atuais.
+
+---
+
+## ADR-010 — Modelo de eventos, estatísticas e xG
+
+**Contexto:** GDD §91 define a tabela `match_events` com tipos de eventos;
+§59 lista as estatísticas que o técnico vê; §60 define xG com 4 exemplos.
+A etapa 5 precisava de representação em memória, compatível com o futuro
+banco (§84–101) e com a narração/replay (§42, §108).
+
+**Decisão:**
+1. **Eventos em memória** (`MatchEvent`) com os campos da §91
+   (`game_second`, `type`, `club_id`, `player_id`, `secondary_player_id`,
+   `metadata`). **Sem `id`/`match_id`**: são da camada de persistência.
+2. **Tipos estendidos**: além dos 9 tipos da §91, `TACKLE` e `CORNER`
+   existem porque a §59 exige desarmes e escanteios, que a lista original
+   não cobre.
+3. **Contrato de metadata**: `SHOT { xg, noGol }`, `PASS { sucesso }`,
+   `CARD { cor }` — demais chaves livres (metadata_json).
+4. **xG**: função `calcularXg(tipo)` com a tabela exata da §60
+   (0.05 / 0.12 / 0.42 / 0.76). Modelagem contínua por distância/ângulo é
+   calibração futura.
+5. **`computeMatchStats(events, posse)`**: função pura que agrega a §59;
+   posse vem da linha do tempo dos ciclos (§52), não de eventos; sem
+   passes, precisão = 0; eventos de clubes desconhecidos são ignorados.
+
+**Consequências:**
+- ✅ Mesmos eventos → mesmas estatísticas (determinismo/ replay §108).
+- ✅ Camada de banco futura mapeia direto para a tabela da §91.
+- ⚠️ O ciclo ainda não gera eventos automaticamente — integração pendente
+  (ver roadmap); estatísticas só existem quando há eventos para agregar.
 
 ---
 

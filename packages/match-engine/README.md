@@ -13,9 +13,9 @@ que deve ser **independente da interface** (seção 103) e **determinístico**
 | 1 | RNG determinístico com seed (`mulberry32`) | ✅ Concluída |
 | 2 | Estado da partida e ciclo de simulação (1 ciclo = 1 segundo) | ✅ Concluída |
 | 3 | Resolução de ações por atributos (passe, drible, finalização) | ✅ Concluída |
-| 4 | Aleatoriedade controlada embutida nas ações | ⬜ Próxima |
-| 5 | Eventos, estatísticas e xG | ⬜ Não iniciada |
-| 6 | Nota dos jogadores | ⬜ Não iniciada |
+| 4 | Aleatoriedade controlada embutida nas ações | ✅ Concluída |
+| 5 | Eventos, estatísticas e xG | ✅ Concluída |
+| 6 | Nota dos jogadores | ⬜ Próxima |
 | 7 | Prova de conceito (campo 2D, narração, táticas ao vivo) | ⬜ Não iniciada |
 
 > A ordem das etapas segue `docs/03-ROADMAP.md`. Não implementar etapas
@@ -104,6 +104,38 @@ Idem `resolveDribble(atacante, marcador)` e
 > Ações são **funções independentes** — ainda não rodam dentro do ciclo
 > da partida (integração futura, ver roadmap). Constantes de equilíbrio
 > provisórias: ADR-009.
+
+### Eventos, xG e estatísticas (etapa 5)
+
+```ts
+import {
+  criarEvento, calcularXg, computeMatchStats,
+} from "@manager/match-engine";
+
+// Evento (GDD §91) — validado, com metadata documentada:
+const chute = criarEvento({
+  gameSecond: 734,
+  type: "SHOT",
+  clubId: "casa",
+  playerId: "p10",
+  metadata: { xg: calcularXg("CARA_A_CARA"), noGol: true }, // §60
+});
+
+// Estatísticas da §59 a partir dos eventos + posse (linha do tempo):
+const stats = computeMatchStats({
+  events: [chute],
+  homeClubId: "casa",
+  awayClubId: "fora",
+  homePossessionSeconds: 2700,
+  awayPossessionSeconds: 1800,
+});
+// stats.home: posse, finalizações, no gol, xG, passes, precisão,
+// desarmes, escanteios, faltas, cartões
+```
+
+> Aleatoriedade controlada (etapa 4, §56) é garantida pelos clamps de
+> chance e comprovada por testes estatísticos em
+> `tests/controlled-randomness.test.ts` (10.000 tentativas por propriedade).
 
 ## Comandos
 
