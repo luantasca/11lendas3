@@ -125,7 +125,7 @@ npm run typecheck  # esperado: sem erros
 
 ### Pendências abertas
 
-- [ ] Inicializar repositório git (aguardando pedido/autorização).
+- [x] Inicializar repositório git (concluído na sessão 3 — ver entrada no topo).
 - [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
 - [ ] Ajustar constantes de decaimento por playtest (valores provisórios).
 - [ ] Próxima etapa: ações por atributos (GDD §54–55).
@@ -204,6 +204,6 @@ npm run typecheck  # esperado: sem erros
 
 ### Pendências abertas
 
-- [ ] Inicializar repositório git (não feito — requer pedido/autorização).
+- [x] Inicializar repositório git (concluído na sessão 3 — ver entrada no topo).
 - [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x ([ADR-006](02-DECISOES-TECNICAS.md)).
 - [ ] Próxima etapa: motor — estado da partida e ciclos (GDD §52–53).
