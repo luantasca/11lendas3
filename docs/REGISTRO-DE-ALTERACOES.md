@@ -18,9 +18,15 @@
    (documentação + monorepo + motor etapas 1–2).
 4. Documentação atualizada: pendência de git marcada como concluída no
    README raiz, roadmap e guia de continuação.
-5. **`git push` PENDENTE** — o ambiente não possui credenciais do GitHub
-   (sem `gh`, sem chaves SSH, sem credential helper). Após autenticar,
-   basta executar `git push -u origin main`.
+5. **Autenticação SSH configurada**: par de chaves ed25519 gerado no
+   ambiente (`~/.ssh/id_ed25519_11lendas3`); a chave pública **v2** foi
+   cadastrada como **Deploy Key com write access** no repositório. Remote
+   trocado para `git@github.com:luantasca/11lendas3.git` e `known_hosts`
+   do GitHub verificado contra a API oficial (fingerprint
+   `SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU`).
+   Nota: a chave v1 foi recusada pelo GitHub ("chave já em uso" +
+   `Permission denied`) e descartada; a v2 autenticou com sucesso.
+6. **Push concluído**: branch `main` enviada ao GitHub (commit `644a7d5`).
 
 ### Motivo
 
@@ -36,8 +42,9 @@ Proteger o trabalho realizado e viabilizar a continuação segura
 
 ```bash
 git log --oneline   # deve mostrar o primeiro commit
-git remote -v       # origin -> https://github.com/luantasca/11lendas3.git
+git remote -v       # origin -> git@github.com:luantasca/11lendas3.git
 git status          # deve mostrar working tree limpa
+git ls-remote --heads origin  # main deve apontar para o mesmo commit
 ```
 
 ### Pendências abertas
