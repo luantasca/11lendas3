@@ -12,8 +12,8 @@ que deve ser **independente da interface** (seção 103) e **determinístico**
 |-------|----------|----------|
 | 1 | RNG determinístico com seed (`mulberry32`) | ✅ Concluída |
 | 2 | Estado da partida e ciclo de simulação (1 ciclo = 1 segundo) | ✅ Concluída |
-| 3 | Resolução de ações por atributos (passe, drible, finalização) | ⬜ Próxima |
-| 4 | Aleatoriedade controlada embutida nas ações | ⬜ Não iniciada |
+| 3 | Resolução de ações por atributos (passe, drible, finalização) | ✅ Concluída |
+| 4 | Aleatoriedade controlada embutida nas ações | ⬜ Próxima |
 | 5 | Eventos, estatísticas e xG | ⬜ Não iniciada |
 | 6 | Nota dos jogadores | ⬜ Não iniciada |
 | 7 | Prova de conceito (campo 2D, narração, táticas ao vivo) | ⬜ Não iniciada |
@@ -73,6 +73,37 @@ duração de 90 min, constantes de decaimento provisórias de equilíbrio,
 fase inicial `CONSTRUCAO` e campo 2D normalizado 0–100. Transições de
 fase, movimentação da bola, eventos e estatísticas pertencem às etapas
 posteriores — ainda **não implementados**.
+
+### Ações por atributos (etapa 3)
+
+```ts
+import {
+  calcPassChance, calcDribbleChance, calcShotChance,
+  resolvePass, resolveDribble, resolveShot,
+} from "@manager/match-engine";
+
+// Cálculo puro (determinístico, sem RNG) — útil para testes e UI:
+const chance = calcPassChance({
+  atacante,        // Player com atributos (GDD §10)
+  receptor,        // posicionamento do receptor entra (§55)
+  pressao: 40,     // 0–100 pressão adversária
+  distancia: 15,   // metros
+  entrosamento: 70,
+  condicao: 92,    // opcional (padrão 100, §16)
+  forma: 3,        // opcional (padrão 0, −10..+10, §15)
+});
+
+// Resolução com sorteio via RNG da partida (§104, §56):
+const resultado = resolvePass(contexto, engine.rng);
+// { sucesso: boolean, chance: number }
+```
+
+Idem `resolveDribble(atacante, marcador)` e
+`resolveShot({ atacante, goleiro, usandoPeDominante, angulo, distancia, pressao })`.
+
+> Ações são **funções independentes** — ainda não rodam dentro do ciclo
+> da partida (integração futura, ver roadmap). Constantes de equilíbrio
+> provisórias: ADR-009.
 
 ## Comandos
 

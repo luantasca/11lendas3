@@ -17,6 +17,7 @@ financeira) e um **Técnico** (gestão esportiva e partidas).
 | Esqueleto do monorepo (workspaces + TypeScript + testes) | ✅ Inicial |
 | `match-engine` — RNG determinístico (etapa 1) | ✅ Concluído |
 | `match-engine` — estado e ciclo de simulação (etapa 2) | ✅ Concluído |
+| `match-engine` — ações por atributos: passe, drible, finalização (etapa 3) | ✅ Concluído |
 | `match-engine` — demais etapas do motor | ⬜ Não iniciadas |
 | App web, banco de dados, autenticação, draft, liga | ⬜ Não iniciados |
 

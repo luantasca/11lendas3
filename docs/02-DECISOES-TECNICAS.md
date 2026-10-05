@@ -16,6 +16,7 @@
 | 006 | Limitação do ambiente: Node 16 (recomendado: 20 LTS) | ⚠️ Pendente de upgrade |
 | 007 | Idioma: código em inglês, documentação em PT-BR | ✅ Aceita |
 | 008 | Motor por ciclos com estado imutável e RNG interno | ✅ Aceita |
+| 009 | Modelo de chance por duelo para resolução de ações | ✅ Aceita |
 
 ---
 
@@ -164,6 +165,38 @@ estável para as etapas futuras (ações, eventos, replay §108).
 - ✅ Base pronta para replay/debug (GDD §108).
 - ⚠️ Constantes de equilíbrio precisarão de ajuste por playtest — qualquer
   mudança deve ser registrada no registro de alterações.
+
+---
+
+## ADR-009 — Modelo de chance por duelo para resolução de ações
+
+**Contexto:** GDD §55 define quais atributos participam de cada ação
+(passe, drible, finalização) e §57 dá uma fórmula conceitual, mas o GDD
+**não informa constantes nem fórmula fechada**. A etapa 3 precisava de um
+modelo simples, testável e ajustável.
+
+**Decisão:**
+1. Cada ação vira uma função pura `calc*Chance(context)` → número em
+   `[0, 1]`, e um `resolve*(context, rng)` que sorteia o desfecho com o
+   RNG determinístico da partida (§104).
+2. Modelo: `chance = clamp(base + pontos × 0.01)`, onde `pontos` combina
+   **qualidade técnica + mental** (médias ponderadas dos atributos do §55)
+   **− defesa adversária** (pressão/desarme/goleiro) **+ modificadores de
+   estado** (condição §16, forma §15, entrosamento §17) e ajustes
+   situacionais (distância, ângulo, pé dominante).
+3. Bases: passe 0.50, drible 0.50, finalização 0.30 (chute real converge
+   para taxa menor; calibrar com xG na etapa 5, §60).
+4. **Todas as constantes são provisórias de equilíbrio** — documentadas em
+   `src/actions.ts` e sujeitas a ajuste por playtest.
+5. "Situação tática" (§57) ainda não entra no cálculo — a integração das
+   ações ao ciclo da partida vem na preparação da prova de conceito.
+
+**Consequências:**
+- ✅ Fórmula única e simples de entender/ajustar; cada variável tem teste
+  próprio (sensibilidade monotônica).
+- ✅ Sorteio já usa o RNG da seed — reprodução integral garantida.
+- ⚠️ Balanceamento real (taxas de gol/passe parecidas com futebol) só
+  acontece nas etapas 4–5; não julgar equilíbrio pelos valores atuais.
 
 ---
 

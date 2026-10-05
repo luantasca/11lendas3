@@ -6,6 +6,86 @@
 
 ---
 
+## 2026-10-05 — Sessão 4: Motor etapa 3 — ações por atributos
+
+### O que foi feito
+
+1. **`packages/match-engine/src/player.ts`** — ficha e atributos do
+   jogador: `PlayerAttributes` com os 27 atributos do GDD §10 (Técnicos,
+   Físicos, Mentais, Defensivos, Goleiros, escala 1–100), `Player` com
+   pé dominante (§85) — mapeamento PT→EN documentado em comentários.
+2. **`packages/match-engine/src/actions.ts`** — resolução das três ações
+   da §55:
+   - `calcPassChance(ctx)` — Passe/Visão/Decisão vs pressão, distância,
+     posicionamento do receptor, entrosamento;
+   - `calcDribbleChance(ctx)` — Drible/Agilidade/Aceleração/Decisão vs
+     Desarme/Posicionamento/Agilidade do marcador;
+   - `calcShotChance(ctx)` — Finalização/Composição/Posicionamento vs
+     Reflexo/Posicionamento/1×1 do goleiro + pé dominante, ângulo,
+     distância, pressão;
+   - `resolvePass/Dribble/Shot(ctx, rng)` — sorteio do desfecho com o RNG
+     da partida (§104, §56);
+   - modificadores de estado: condição (§16), forma (§15),
+     entrosamento (§17) — conforme fórmula conceitual da §57.
+3. **28 novos testes** (total do pacote: 53): sensibilidade monotônica de
+   cada variável, clamps de sanidade, determinismo do sorteio, sanidade
+   estatística do favorito (§56) e validações em PT-BR.
+4. **Documentação atualizada**: ADR-009, roadmap (etapa 3 ✅), READMEs,
+   guia de continuação e árvore de arquitetura.
+
+### Motivo
+
+Pedido direto: "Fazer a etapa 3 completa de uma vez: atributos + passe +
+drible + finalização" — próximo item do roadmap (prioridade §113).
+
+### Premissas e limitações (não definidas no GDD)
+
+| Item | Valor adotado | Observação |
+|------|---------------|------------|
+| Fórmula | `clamp(base + pontos × 0.01)` | GDD §57 dá só o conceito — modelo fechado no ADR-009. |
+| Bases de chance | passe 0.50 / drible 0.50 / finalização 0.30 | **Provisórias**; calibrar com xG (§60) na etapa 5. |
+| Constantes (distância, ângulo, pé, pressão, condição, forma, entrosamento) | ver tabela do ADR-009 / comentários em `actions.ts` | **Provisórias de equilíbrio** — ajustar por playtest. |
+| "Situação tática" (§57) | não modelada | Entra na integração das ações ao ciclo (futura). |
+| Ações no ciclo | não integradas | São funções independentes; integração exige posicionamento em campo. |
+
+### Arquivos criados/modificados
+
+| Arquivo | Motivo |
+|---------|--------|
+| `packages/match-engine/src/player.ts` | Atributos §10/§85–86 |
+| `packages/match-engine/src/actions.ts` | Chance + resolução das ações §55/§57 |
+| `packages/match-engine/src/index.ts` | Exportar nova API pública |
+| `packages/match-engine/tests/actions.test.ts` | 28 testes da etapa 3 |
+| `packages/match-engine/README.md` | Status + API das ações |
+| `docs/02-DECISOES-TECNICAS.md` | ADR-009 (modelo de chance) |
+| `docs/03-ROADMAP.md` | Etapa 3 ✅ + obs. sobre integração |
+| `docs/01-ARQUITETURA.md` | Árvore de diretórios |
+| `docs/05-GUIA-DE-CONTINUACAO.md` | Estado conhecido atualizado |
+| `README.md` | Tabela de status |
+
+### Impactos
+
+- API de ações é a base da resolução de jogadas — mas **ainda não afeta
+  a partida** (não integrada ao `tick()`).
+- Balanceamento atual NÃO representa futebol real (taxas de gol altas) —
+  calibração prevista nas etapas 4–5.
+
+### Como testar
+
+```bash
+npm test           # esperado: 53 testes passando
+npm run typecheck  # esperado: sem erros
+```
+
+### Pendências abertas
+
+- [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
+- [ ] Constantes provisórias: decaimento e ações (ajuste por playtest).
+- [ ] Integração das ações ao ciclo da partida (posicionamento em campo).
+- [ ] Próxima etapa: aleatoriedade controlada (GDD §56).
+
+---
+
 ## 2026-10-05 — Sessão 3: Inicialização do repositório Git
 
 ### O que foi feito

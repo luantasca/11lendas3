@@ -55,10 +55,13 @@ flowchart TD
         │   ├── index.ts           # API pública (exportações)
         │   ├── rng.ts             # RNG determinístico (etapa 1)
         │   ├── match-state.ts     # Tipos/constantes do estado (etapa 2)
-        │   └── engine.ts          # Ciclo de simulação (etapa 2)
+        │   ├── engine.ts          # Ciclo de simulação (etapa 2)
+        │   ├── player.ts          # Atributos do jogador (etapa 3)
+        │   └── actions.ts         # Passe, drible, finalização (etapa 3)
         └── tests/
             ├── rng.test.ts        # Testes com valores golden
-            └── engine.test.ts     # Testes do ciclo, condição e determinismo
+            ├── engine.test.ts     # Testes do ciclo, condição e determinismo
+            └── actions.test.ts    # Testes de chance, sensibilidade e validações
 ```
 
 ## 3. Arquitetura alvo do motor (prevista no GDD §106)
