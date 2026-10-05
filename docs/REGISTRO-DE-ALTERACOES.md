@@ -131,7 +131,7 @@ git ls-remote --heads origin  # main deve apontar para o mesmo commit
 
 - [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
 - [ ] Ajustar constantes de decaimento por playtest (valores provisórios).
-- [ ] Próxima etapa do motor: ações por atributos (GDD §54–55).
+- [x] Próxima etapa do motor: ações por atributos (concluída na sessão 4 — etapa 3 do roadmap).
 
 ---
 
@@ -208,7 +208,7 @@ npm run typecheck  # esperado: sem erros
 - [x] Inicializar repositório git (concluído na sessão 3 — ver entrada no topo).
 - [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x (ADR-006).
 - [ ] Ajustar constantes de decaimento por playtest (valores provisórios).
-- [ ] Próxima etapa: ações por atributos (GDD §54–55).
+- [x] Próxima etapa: ações por atributos (concluída na sessão 4 — etapa 3 do roadmap).
 
 ---
 
@@ -286,4 +286,4 @@ npm run typecheck  # esperado: sem erros
 
 - [x] Inicializar repositório git (concluído na sessão 3 — ver entrada no topo).
 - [ ] Upgrade do ambiente para Node 20 LTS e Vitest ≥ 1.x ([ADR-006](02-DECISOES-TECNICAS.md)).
-- [ ] Próxima etapa: motor — estado da partida e ciclos (GDD §52–53).
+- [x] Próxima etapa: motor — estado da partida e ciclos (concluída na sessão 2 — etapa 2 do roadmap).
